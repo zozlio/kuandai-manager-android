@@ -1,0 +1,145 @@
+plugins {
+    id 'com.android.application'
+}
+
+// ============================================================
+// 版本信息：单一真源
+//   APP_VERSION_NAME  语义化版本，如 1.3.0
+//   APP_VERSION_CODE  构建号（整数，每次发版递增，用于覆盖安装）
+//
+// 构建日期用 providers.exec 取系统时间：
+//   providers.provider {} 会被 configuration cache 固化——命中缓存时
+//   配置阶段不重跑，会拿到上次的陈旧日期；
+//   providers.exec 是执行期命令，每次构建都重新执行，日期才是真的。
+// ============================================================
+def APP_VERSION_NAME = "1.4.1"
+def APP_VERSION_CODE = 10
+
+// 构建日期（执行期求值，每次构建刷新）
+def buildDateProvider = providers.exec {
+    commandLine 'sh', '-c', 'date +%Y.%m.%d'
+}.standardOutput.asText.map { it.trim() }
+
+def buildDateCompactProvider = providers.exec {
+    commandLine 'sh', '-c', 'date +%Y%m%d'
+}.standardOutput.asText.map { it.trim() }
+
+// 生成的 Java 源目录
+def buildInfoDir = new File(layout.buildDirectory.get().asFile, 'generated/sources/buildInfo')
+
+android {
+    namespace 'com.kuandai.manager'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "com.kuandai.manager"
+        minSdk 23          // AppCompat 1.8.0 等最新 AndroidX 库要求 minSdk ≥ 23（Android 6.0+）
+        targetSdk 36       // Android 16 (Baklava)
+        versionCode APP_VERSION_CODE
+        versionName APP_VERSION_NAME
+        // 兼容 Android 4.4+
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // 版本号单一真源：BuildConfig.VERSION_NAME / VERSION_CODE
+    // 网页层通过 AppBridge.getAppVersion() / getBuildCode() 读取，
+    // 不要再在 index.html / app.js / xml 里硬编码版本字符串。
+    buildFeatures {
+        buildConfig true
+    }
+}
+
+// ============================================================
+// 生成 BuildInfo.java：只放「构建期才能确定」的信息（构建日期）
+// 版本名/构建号仍以 BuildConfig 为准，不重复定义。
+// ============================================================
+// ============================================================
+// 生成 BuildInfo.java：只放「构建期才能确定」的信息（构建日期）
+// 版本名/构建号仍以 BuildConfig 为准，不重复定义。
+//
+// 注意：AGP 的 addGeneratedSourceDirectory 要求任务类型上有
+// outputDirectory 属性，DefaultTask 没有，所以这里自定义任务类型。
+// ============================================================
+abstract class GenerateBuildInfo extends DefaultTask {
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDirectory()
+
+    @Input
+    abstract Property<String> getBuildDate()
+
+    @Input
+    abstract Property<String> getBuildDateCompact()
+
+    @TaskAction
+    void generate() {
+        def f = new File(outputDirectory.get().asFile, 'com/kuandai/manager/BuildInfo.java')
+        f.parentFile.mkdirs()
+        f.text = """package com.kuandai.manager;
+
+/**
+ * 自动生成，请勿手改。
+ * 版本名/构建号见 app/build.gradle；这里只放构建期才能确定的信息。
+ */
+public final class BuildInfo {
+
+    private BuildInfo() {}
+
+    /** 构建日期，如 2026.11.15 */
+    public static final String BUILD_DATE = "${buildDate.get()}";
+
+    /** 文件名用紧凑日期，如 20261115 */
+    public static final String BUILD_DATE_COMPACT = "${buildDateCompact.get()}";
+}
+"""
+    }
+}
+
+def generateBuildInfo = tasks.register('generateBuildInfo', GenerateBuildInfo) {
+    outputDirectory.set(buildInfoDir)
+    buildDate.set(buildDateProvider)
+    buildDateCompact.set(buildDateCompactProvider)
+    // 每次构建都重算日期
+    outputs.upToDateWhen { false }
+}
+
+// ============================================================
+// APK 文件名带上版本与日期：
+//   宽带台账管理_v1.4.1_20261115_b10.apk
+// ============================================================
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        // 生成的 BuildInfo.java 挂到变体的 Java 源集
+        // （不能用 sourceSets.java.srcDir 指向任务输出目录，会触发隐式依赖检查）
+        variant.sources.java.addGeneratedSourceDirectory(generateBuildInfo) { it.outputDirectory }
+
+        variant.outputs.forEach { output ->
+            output.outputFileName.set(providers.provider {
+                "宽带台账管理_v${APP_VERSION_NAME}_${buildDateCompactProvider.get()}_b${APP_VERSION_CODE}.apk"
+            })
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.8.0'
+    implementation 'androidx.webkit:webkit:1.12.1'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.activity:activity:1.10.1'
+    implementation 'androidx.core:core:1.16.0'
+}
