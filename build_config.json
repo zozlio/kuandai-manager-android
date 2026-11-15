@@ -1,0 +1,53 @@
+{
+  "project_info": {
+    "name": "KuandaiManager",
+    "version": "1.4.1",
+    "description": "宽带账号台账管理系统 - Android APK"
+  },
+  "build_requirements": {
+    "jdk": "17",
+    "android_sdk": "API 36 (Android 16 Baklava)",
+    "gradle": "9.6.0",
+    "agp": "9.5.0",
+    "build_tools": "36.0.0"
+  },
+  "dependencies": {
+    "appcompat": "1.8.0",
+    "material": "1.12.0",
+    "webkit": "1.12.1",
+    "activity": "1.10.1",
+    "core": "1.16.0"
+  },
+  "compatibility": {
+    "minSdk": 23,
+    "targetSdk": 36,
+    "compileSdk": 36,
+    "versionCode": 10
+  },
+  "design_system": {
+    "name": "液面 / Liquid Ledger",
+    "description": "冷调纸白基底 + 磨砂玻璃材质 + 光纤青信号色",
+    "palette": {
+      "paper": "#EDEFEE",
+      "ink": "#121517",
+      "fiber": "#0D6A6D",
+      "amber": "#97650F",
+      "rust": "#A6482F"
+    }
+  },
+  "build_steps": [
+    "1. 安装 JDK 17: brew install openjdk@17",
+    "2. 安装 Android SDK: brew install --cask android-commandlinetools",
+    "3. 接受许可: sdkmanager --licenses",
+    "4. 安装平台: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'",
+    "5. 生成 Wrapper: gradle wrapper --gradle-version 9.6.0",
+    "6. 构建APK: ./gradlew assembleDebug",
+    "7. APK输出: app/build/outputs/apk/debug/宽带台账管理_v{versionName}_{日期}_b{versionCode}.apk"
+  ],
+  "versioning": {
+    "single_source": "app/build.gradle 的 APP_VERSION_NAME / APP_VERSION_CODE",
+    "display_format": "v{versionName} · {构建日期} · Build {versionCode}",
+    "build_date_source": "providers.exec 调用系统 date，构建期生成 BuildInfo.java",
+    "note": "覆盖安装必须递增 versionCode"
+  }
+}

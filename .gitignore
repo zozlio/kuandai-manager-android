@@ -1,0 +1,27 @@
+# Gradle / 构建产物
+.gradle/
+build/
+app/build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# 本机 SDK 路径（含绝对路径，不入库）
+local.properties
+
+# 签名文件（绝不入库）
+*.jks
+*.keystore
+keystore.properties
+
+# IDE
+.idea/
+*.iml
+*.hprof
+.DS_Store
+
+# 设计草稿与本地预览（界面正式截图在 preview/）
+design-preview/
+
+# 智能体工作日志（仅本地）
+.workbuddy-ai/
