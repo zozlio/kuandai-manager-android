@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>宽带台账管理</title>
+<meta name="theme-color" content="#F0F2F1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 侧边栏遮罩 -->
+<div id="overlay" class="overlay" onclick="closeSidebar()"></div>
+
+<!-- 侧边栏 -->
+<nav id="sidebar" class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">K</div>
+    <div class="sidebar-title">宽带台账管理</div>
+    <div class="sidebar-version" id="appVersion">v1.3.0 · 2026.11.15 · Build 8</div>
+  </div>
+  <ul class="sidebar-menu">
+    <li class="active" onclick="navTo('dashboard')">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M3,13h8V3H3v10zM3,21h8v-6H3v6zM13,21h8V11h-8v10zM13,3v6h8V3h-8z"/></svg>
+      <span>收入看板</span>
+    </li>
+    <li onclick="navTo('accounts')">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M4,6H2v14c0,1.1 0.9,2 2,2h14v-2H4V6z M20,2H8C6.9,2 6,2.9 6,4v12c0,1.1 0.9,2 2,2h12c1.1,0 2-0.9 2-2V4C22,2.9 21.1,2 20,2z M20,16H8V4h12V16z M12,5.5c1.38,0 2.5,1.12 2.5,2.5s-1.12,2.5 -2.5,2.5S9.5,9.38 9.5,8S10.62,5.5 12,5.5z M17,14H7v-1c0-1.33 2.67-2 5-2s5,0.67 5,2V14z"/></svg>
+      <span>台账列表</span>
+    </li>
+    <li onclick="navTo('rooms')">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M4,1h16c1.1,0 2,0.9 2,2v4c0,1.1 -0.9,2 -2,2H4C2.9,9 2,8.1 2,7V3C2,1.9 2.9,1 4,1zM4,15h16c1.1,0 2,0.9 2,2v4c0,1.1 -0.9,2 -2,2H4c-1.1,0 -2,-0.9 -2,-2v-4C2,15.9 2.9,15 4,15zM6,4v2h2V4H6zM6,18v2h2v-2H6z"/></svg>
+      <span>机房与收入</span>
+    </li>
+    <li onclick="navTo('abnormal')">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M1,21h22L12,2 1,21zM13,18h-2v-2h2v2zM13,14h-2v-4h2v4z"/></svg>
+      <span>异常账号</span>
+    </li>
+    <li onclick="navTo('vision')">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M21,19V5c0,-1.1 -0.9,-2 -2,-2H5C3.9,3 3,3.9 3,5v14c0,1.1 0.9,2 2,2h14C20.1,21 21,20.1 21,19zM8.5,13.5l2.5,3.01L14.5,12l4.5,6H5L8.5,13.5z"/></svg>
+      <span>AI 识图记账</span>
+    </li>
+    <li onclick="navTo('transactions')">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M19,3H5C3.9,3 3,3.9 3,5v14c0,1.1 0.9,2 2,2h14c1.1,0 2,-0.9 2,-2V5C21,3.9 20.1,3 19,3zM14,17H7v-2h7V17zM17,13H7v-2h10V13zM17,9H7V7h10V9z"/></svg>
+      <span>收支流水</span>
+    </li>
+    <li onclick="navTo('export')">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M19,9h-4V3H9v6H5l7,7L19,9zM5,18v2h14v-2H5z"/></svg>
+      <span>数据导入导出</span>
+    </li>
+    <li onclick="navTo('settings')">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M19.14,12.94c0.04,-0.3 0.06,-0.61 0.06,-0.94c0,-0.32 -0.02,-0.64 -0.07,-0.94l2.03,-1.58c0.18,-0.14 0.23,-0.41 0.12,-0.61l-1.92,-3.32c-0.12,-0.22 -0.37,-0.29 -0.59,-0.22l-2.39,0.96c-0.5,-0.38 -1.03,-0.7 -1.62,-0.94l-0.36,-2.54c-0.04,-0.24 -0.24,-0.41 -0.48,-0.41h-3.84c-0.24,0 -0.43,0.17 -0.47,0.41l-0.36,2.54c-0.59,0.24 -1.13,0.57 -1.62,0.94l-2.39,-0.96c-0.22,-0.08 -0.47,0 -0.59,0.22L2.74,8.87c-0.12,0.21 -0.08,0.47 0.12,0.61l2.03,1.58C4.84,11.36 4.8,11.69 4.8,12s0.02,0.64 0.07,0.94l-2.03,1.58c-0.18,0.14 -0.23,0.41 -0.12,0.61l1.92,3.32c0.12,0.22 0.37,0.29 0.59,0.22l2.39,-0.96c0.5,0.38 1.03,0.7 1.62,0.94l0.36,2.54c0.04,0.24 0.24,0.41 0.48,0.41h3.84c0.24,0 0.44,-0.17 0.47,-0.41l0.36,-2.54c0.59,-0.24 1.13,-0.56 1.62,-0.94l2.39,0.96c0.22,0.08 0.47,0 0.59,-0.22l1.92,-3.32c0.12,-0.22 0.07,-0.47 -0.12,-0.61L19.14,12.94zM12,15.6c-1.98,0 -3.6,-1.62 -3.6,-3.6s1.62,-3.6 3.6,-3.6s3.6,1.62 3.6,3.6S13.98,15.6 12,15.6z"/></svg>
+      <span>设置</span>
+    </li>
+  </ul>
+  <div class="sidebar-footer">
+    <div onclick="confirmExit()" style="cursor:pointer;padding:12px;color:var(--ink-3);font-size:13px;text-align:center;letter-spacing:0.02em;">退出应用</div>
+  </div>
+</nav>
+
+<!-- 主容器 -->
+<div id="app" class="app-container">
+
+  <!-- 顶部栏 -->
+  <header class="topbar">
+    <div class="menu-btn" onclick="openSidebar()">
+      <span></span><span></span><span></span>
+    </div>
+    <h1 id="pageTitle">收入看板</h1>
+    <div class="topbar-right" onclick="showAddAccountModal()" title="新增账号" role="button" aria-label="新增账号">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M11,5h2v6h6v2h-6v6h-2v-6H5v-2h6V5z"/></svg>
+    </div>
+  </header>
+
+  <!-- 页面内容区 -->
+  <div id="content" class="content"></div>
+
+</div>
+
+<!-- 底部 Tab -->
+<div id="bottomNav" class="bottom-nav">
+  <div class="bottom-nav-item active" onclick="navTo('dashboard')">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M3,13h8V3H3v10zM3,21h8v-6H3v6zM13,21h8V11h-8v10zM13,3v6h8V3h-8z"/></svg>
+    <span>看板</span>
+  </div>
+  <div class="bottom-nav-item" onclick="navTo('accounts')">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M4,6H2v14c0,1.1 0.9,2 2,2h14v-2H4V6z M20,2H8C6.9,2 6,2.9 6,4v12c0,1.1 0.9,2 2,2h12c1.1,0 2-0.9 2-2V4C22,2.9 21.1,2 20,2z M20,16H8V4h12V16z"/></svg>
+    <span>台账</span>
+  </div>
+  <div class="bottom-nav-item" onclick="navTo('rooms')">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M4,1h16c1.1,0 2,0.9 2,2v4c0,1.1 -0.9,2 -2,2H4C2.9,9 2,8.1 2,7V3C2,1.9 2.9,1 4,1zM4,15h16c1.1,0 2,0.9 2,2v4c0,1.1 -0.9,2 -2,2H4c-1.1,0 -2,-0.9 -2,-2v-4C2,15.9 2.9,15 4,15z"/></svg>
+    <span>机房</span>
+  </div>
+  <div class="bottom-nav-item" onclick="navTo('settings')">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M19.14,12.94c0.04,-0.3 0.06,-0.61 0.06,-0.94c0,-0.32 -0.02,-0.64 -0.07,-0.94l2.03,-1.58c0.18,-0.14 0.23,-0.41 0.12,-0.61l-1.92,-3.32c-0.12,-0.22 -0.37,-0.29 -0.59,-0.22l-2.39,0.96c-0.5,-0.38 -1.03,-0.7 -1.62,-0.94l-0.36,-2.54c-0.04,-0.24 -0.24,-0.41 -0.48,-0.41h-3.84c-0.24,0 -0.43,0.17 -0.47,0.41l-0.36,2.54c-0.59,0.24 -1.13,0.57 -1.62,0.94l-2.39,-0.96c-0.22,-0.08 -0.47,0 -0.59,0.22L2.74,8.87c-0.12,0.21 -0.08,0.47 0.12,0.61l2.03,1.58C4.84,11.36 4.8,11.69 4.8,12s0.02,0.64 0.07,0.94l-2.03,1.58c-0.18,0.14 -0.23,0.41 -0.12,0.61l1.92,3.32c0.12,0.22 0.37,0.29 0.59,0.22l2.39,-0.96c0.5,0.38 1.03,0.7 1.62,0.94l0.36,2.54c0.04,0.24 0.24,0.41 0.48,0.41h3.84c0.24,0 0.44,-0.17 0.47,-0.41l0.36,-2.54c0.59,-0.24 1.13,-0.56 1.62,-0.94l2.39,0.96c0.22,0.08 0.47,0 0.59,-0.22l1.92,-3.32c0.12,-0.22 0.07,-0.47 -0.12,-0.61L19.14,12.94zM12,15.6c-1.98,0 -3.6,-1.62 -3.6,-3.6s1.62,-3.6 3.6,-3.6s3.6,1.62 3.6,3.6S13.98,15.6 12,15.6z"/></svg>
+    <span>设置</span>
+  </div>
+</div>
+
+<!-- ====== 模态框 ====== -->
+
+<!-- 新增账号 -->
+<div id="addAccountModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>新增宽带账号</h2>
+      <span class="close" onclick="closeModal('addAccountModal')">&times;</span>
+    </div>
+    <div class="modal-body" id="addAccountBody">
+      <div class="form-group">
+        <label>手机号 *</label>
+        <input type="tel" id="new_phone" placeholder="如 13800138000" maxlength="11">
+      </div>
+      <div class="form-group">
+        <label>宽带账号 *</label>
+        <input type="text" id="new_account" placeholder="宽带账号">
+      </div>
+      <div class="form-group">
+        <label>宽带注册码</label>
+        <input type="text" id="new_regcode" placeholder="注册码">
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label>注册人</label>
+          <input type="text" id="new_owner" placeholder="注册人姓名">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label>手机卡使用人</label>
+          <input type="text" id="new_carduser" placeholder="使用人">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label>机房</label>
+          <input type="text" id="new_room" placeholder="机房名称">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label>节点平台</label>
+          <input type="text" id="new_platform" placeholder="平台名称">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>节点号</label>
+        <input type="text" id="new_node" placeholder="节点号">
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label>套餐原价 (元)</label>
+          <input type="number" id="new_package" value="399" step="0.01">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label>运营商</label>
+          <select id="new_carrier">
+            <option value="电信">电信</option>
+            <option value="联通">联通</option>
+            <option value="移动">移动</option>
+            <option value="广电">广电</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>备注</label>
+        <input type="text" id="new_remark" placeholder="备注信息">
+      </div>
+      <button class="btn-primary" onclick="addAccount()" style="width:100%;margin-top:10px;">创建账号</button>
+    </div>
+  </div>
+</div>
+
+<!-- 充值 -->
+<div id="rechargeModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>充值</h2>
+      <span class="close" onclick="closeModal('rechargeModal')">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div id="rechargeAccountInfo" style="margin-bottom:14px;color:var(--fiber);font-size:14px;font-weight:600;"></div>
+      <div class="form-group">
+        <label>充值金额 (元)</label>
+        <input type="number" id="recharge_amount" placeholder="输入金额" step="0.01" min="0">
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button class="btn-secondary" style="flex:1;padding:8px;font-size:13px;" onclick="quickRecharge(100)">+100</button>
+        <button class="btn-secondary" style="flex:1;padding:8px;font-size:13px;" onclick="quickRecharge(200)">+200</button>
+        <button class="btn-secondary" style="flex:1;padding:8px;font-size:13px;" onclick="quickRecharge(500)">+500</button>
+      </div>
+      <div id="rechargePreview" class="recharge-preview"></div>
+      <button class="btn-primary" onclick="confirmRecharge()" style="width:100%;margin-top:10px;">确认充值</button>
+    </div>
+  </div>
+</div>
+
+<!-- 账号详情 -->
+<div id="accountDetailModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>账号详情</h2>
+      <span class="close" onclick="closeModal('accountDetailModal')">&times;</span>
+    </div>
+    <div class="modal-body" id="accountDetailBody"></div>
+  </div>
+</div>
+
+<!-- 编辑账号 -->
+<div id="editAccountModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>编辑账号</h2>
+      <span class="close" onclick="closeModal('editAccountModal')">&times;</span>
+    </div>
+    <div class="modal-body" id="editAccountBody"></div>
+  </div>
+</div>
+
+<!-- 记收入 -->
+<div id="incomeModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>记收入</h2>
+      <span class="close" onclick="closeModal('incomeModal')">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div id="incomeAccountInfo" style="margin-bottom:14px;color:var(--fiber);font-size:14px;font-weight:600;"></div>
+      <div class="form-group">
+        <label>日期</label>
+        <input type="date" id="income_date">
+      </div>
+      <div class="form-group">
+        <label>收入金额 (元)</label>
+        <input type="number" id="income_amount" step="0.01" inputmode="decimal" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>备注</label>
+        <input type="text" id="income_note" placeholder="例如 平台结算">
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">同一天重复记录会覆盖，不改变账号余额</div>
+      <button class="btn-primary" onclick="saveIncome()" style="width:100%;">保存收入</button>
+    </div>
+  </div>
+</div>
+
+<!-- 手动记一笔流水 -->
+<div id="manualTxnModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>手动记一笔</h2>
+      <span class="close" onclick="closeModal('manualTxnModal')">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div id="manualTxnInfo" style="margin-bottom:14px;color:var(--fiber);font-size:14px;font-weight:600;"></div>
+      <div class="form-group">
+        <label>类型</label>
+        <select id="txn_kind">
+          <option value="充值">充值（余额增加）</option>
+          <option value="扣费">扣费（余额减少）</option>
+          <option value="调整">调整（把余额设为该值）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>金额 (元)</label>
+        <input type="number" id="txn_amount" step="0.01" inputmode="decimal" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>备注</label>
+        <input type="text" id="txn_note" placeholder="选填，例如 补扣上月底费">
+      </div>
+      <button class="btn-primary" onclick="saveManualTxn()" style="width:100%;">确认记账</button>
+    </div>
+  </div>
+</div>
+
+<!-- 导入文件选择（隐藏，由数据导入页触发）；accept 放宽到 */* 以兼容各家文件管理器 -->
+<input type="file" id="importFile" accept="*/*" style="display:none;" onchange="onImportFileChange(event)">
+
+<!-- 提示框 -->
+<div id="toast" class="toast"></div>
+
+<!-- 确认弹窗 -->
+<div id="confirmDialog" class="modal">
+  <div class="modal-content" style="max-width:320px;">
+    <div class="modal-body" style="padding:20px;">
+      <p id="confirmMessage" style="color:var(--ink);margin-bottom:16px;font-size:15px;line-height:1.5;"></p>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-secondary" style="flex:1;" onclick="closeConfirm(false)">取消</button>
+        <button class="btn-primary" style="flex:1;" onclick="closeConfirm(true)">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
