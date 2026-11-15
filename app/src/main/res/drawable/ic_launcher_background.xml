@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  启动图标背景：纸白基底（液面视觉系统）
+  与网页层的 paper 色值 (#EDEFEE) 同源，带一层极淡的斜向渐变避免死板。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="108"
+                android:endY="108"
+                android:type="linear">
+                <item android:offset="0" android:color="#F4F6F5" />
+                <item android:offset="1" android:color="#E2E7E5" />
+            </gradient>
+        </aapt:attr>
+    </path>
+</vector>
