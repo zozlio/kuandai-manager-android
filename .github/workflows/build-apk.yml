@@ -60,8 +60,26 @@ jobs:
       - name: 准备 Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # 仓库里的 gradlew 没有可执行位（Contents API 写入固定为 100644），
+      # 这里补上；下面还会尝试把可执行位写回仓库，方便别人 clone 后直接用。
+      - name: 恢复 gradlew 可执行位
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        continue-on-error: true
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git update-index --chmod=+x gradlew
+          if git diff --cached --quiet; then
+            echo "gradlew 已具备可执行位，无需修正"
+          else
+            git commit -m "chore: 恢复 gradlew 可执行位"
+            git push origin "HEAD:${{ github.ref_name }}"
+          fi
+
       - name: 构建 Debug APK
-        run: ./gradlew assembleDebug --no-daemon
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
