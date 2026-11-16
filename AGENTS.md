@@ -54,12 +54,16 @@ Android 原生外壳 (Java)
 宽带台账手机版/
 ├── AGENTS.md                 ← 本文件（供智能体阅读）
 ├── BUILD.md                  ← 人类阅读的构建指南
+├── .github/
+│   └── workflows/
+│       └── build-apk.yml      ← CI：push 自动构建，workflow_dispatch 可发 Release
 ├── build.gradle              ← 根 Gradle 配置（声明 AGP 9.5.0）
 ├── settings.gradle           ← 项目设置 + 仓库声明（google + mavenCentral）
 ├── gradle.properties         ← Gradle 配置（AndroidX、缓存、并行）
 ├── build_config.json         ← 构建配置摘要（JSON 格式）
 ├── gradle/
 │   └── wrapper/
+│       ├── gradle-wrapper.jar         ← CI 必需（./gradlew 靠它启动）
 │       └── gradle-wrapper.properties  ← Gradle 9.6.0 下载地址
 ├── app/
 │   ├── build.gradle          ← 应用模块配置（compileSdk 36, minSdk 23, 依赖声明）
@@ -331,17 +335,26 @@ CSV 解析器 `parseCSV` 自实现，支持引号包裹、字段内逗号、`""`
 gradle wrapper --gradle-version 9.6.0
 
 # 2. 构建 Debug APK
+chmod +x gradlew          # 若报 Permission denied 就补这一行
 ./gradlew assembleDebug
 
 # 3. APK 输出位置
-app/build/outputs/apk/debug/app-debug.apk
+app/build/outputs/apk/debug/宽带台账管理_v{versionName}_{日期}_b{versionCode}.apk
 ```
+
+### CI（GitHub Actions）
+`.github/workflows/build-apk.yml`：push 到 `main` 自动构建；`workflow_dispatch` 带 `release_tag` 输入时额外打 tag 并发 GitHub Release。
+
+三个已知坑（都已绕过，勿改回）：
+1. **不要用 `android-actions/setup-android@v3`**：它默认安装已被下架的 `tools` 包，sdkmanager 非零退出 → 整步失败。改成直接用 runner 预装的 cmdline-tools（`$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager`）。
+2. **不要对预装的 sdkmanager 执行 `chmod`**：它是 root 属主，`chmod` 会报 `Operation not permitted`；在 `set -e` 下直接中断脚本。
+3. **`gradlew` 没有可执行位**：通过 Contents API 写入的文件 mode 固定为 `100644`，`./gradlew` 会 `Permission denied`。CI 里先 `chmod +x gradlew`；工作流还有一步会把可执行位写回仓库，别人 clone 后即可直接 `./gradlew`。
 
 ### 签名构建 Release APK
 ```bash
 keytool -genkey -v -keystore kuandai.keystore -alias kuandai -keyalg RSA -keysize 2048 -validity 10000
 ./gradlew assembleRelease
-# APK: app/build/outputs/apk/release/app-release.apk
+# APK: app/build/outputs/apk/release/宽带台账管理_v{versionName}_{日期}_b{versionCode}.apk
 ```
 
 ### macOS 环境安装
