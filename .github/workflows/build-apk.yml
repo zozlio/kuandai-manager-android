@@ -94,11 +94,21 @@ jobs:
           TAG: ${{ inputs.release_tag }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -uo pipefail
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "$TAG" -m "Release $TAG"
-          git push origin "$TAG"
-          gh release create "$TAG" \
-            app/build/outputs/apk/debug/*.apk \
-            --title "$TAG" \
-            --generate-notes
+          git tag -a "$TAG" -m "Release $TAG" 2>/dev/null || echo "tag $TAG 已存在，沿用"
+          git push origin "$TAG" 2>/dev/null || echo "tag $TAG 已推送，跳过"
+
+          # GitHub 会把 Release 附件名里的非 ASCII 字符归一化成 "_"，
+          # 所以另存一份纯 ASCII 文件名用于下载。
+          APK="$(ls app/build/outputs/apk/debug/*.apk | head -n 1)"
+          ASCII_APK="kuandai-manager$(printf '%s' "$(basename "$APK")" | LC_ALL=C tr -cd 'A-Za-z0-9._-')"
+          cp "$APK" "$ASCII_APK"
+          echo "Release 附件：$ASCII_APK"
+
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" "$ASCII_APK" --clobber
+          else
+            gh release create "$TAG" "$ASCII_APK" --title "$TAG" --generate-notes
+          fi
