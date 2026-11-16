@@ -67,8 +67,9 @@
 
 ## 下载安装
 
-1. 打开 **[Releases 页面](https://github.com/zozlio/kuandai-manager-android/releases)**，下载 `宽带台账管理_vX.Y.Z_日期_bN.apk`；
+1. 打开 **[Releases 页面](https://github.com/zozlio/kuandai-manager-android/releases)**，下载 `kuandai-manager_vX.Y.Z_日期_bN.apk`；
    也可以看 [Actions 构建记录](https://github.com/zozlio/kuandai-manager-android/actions) 里的同名 artifact。
+   > ℹ️ APK 在本地的原名是 `宽带台账管理_vX.Y.Z_日期_bN.apk`；GitHub 的 Release 附件会把非 ASCII 字符归一化成 `_`，所以发布时另存了一份纯 ASCII 文件名。
 2. 用手机浏览器下载后点击安装。首次安装系统会提示「未知来源应用」，按提示允许**当前这个浏览器**安装即可（不同 ROM 叫法略有差别）。
 3. 装好打开就是用，无账号、无登录、无注册。
 
