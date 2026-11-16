@@ -87,6 +87,7 @@ unzip /tmp/gradle.zip -d /tmp/
 ### 4. 构建 Debug APK
 
 ```bash
+chmod +x gradlew          # 若报 Permission denied 就补这一行
 ./gradlew assembleDebug
 ```
 

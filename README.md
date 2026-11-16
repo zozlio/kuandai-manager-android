@@ -222,6 +222,7 @@ sdkmanager "platforms;android-36" "build-tools;36.0.0"
 ```bash
 git clone https://github.com/zozlio/kuandai-manager-android.git
 cd kuandai-manager-android
+chmod +x gradlew          # 若报 Permission denied 就补这一行
 ./gradlew assembleDebug
 # 产物：app/build/outputs/apk/debug/宽带台账管理_v1.4.1_20261115_b10.apk
 ```
