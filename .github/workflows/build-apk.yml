@@ -32,18 +32,30 @@ jobs:
       # 改为直接使用 runner 预装的 cmdline-tools。
       - name: 准备 Android SDK
         run: |
-          set -euo pipefail
+          set -uo pipefail
           SDK="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
           echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
           echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
-          SDKMANAGER="$(find "$SDK/cmdline-tools" -maxdepth 3 -type f -name sdkmanager 2>/dev/null | head -n 1)"
+          SDKMANAGER=""
+          for c in "$SDK/cmdline-tools/latest/bin/sdkmanager" "$SDK/cmdline-tools/16.0/bin/sdkmanager"; do
+            if [ -f "$c" ]; then SDKMANAGER="$c"; break; fi
+          done
+          if [ -z "$SDKMANAGER" ]; then
+            SDKMANAGER="$(find "$SDK/cmdline-tools" -maxdepth 3 -type f -name sdkmanager 2>/dev/null | head -n 1 || true)"
+          fi
           if [ -z "$SDKMANAGER" ]; then
             echo "::error::在 $SDK 下找不到 sdkmanager"
             exit 1
           fi
-          chmod +x "$SDKMANAGER"
-          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
-          "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0"
+          echo "使用 sdkmanager: $SDKMANAGER"
+          if [ -x "$SDKMANAGER" ]; then
+            SDK_CMD=("$SDKMANAGER")
+          else
+            SDK_CMD=(sh "$SDKMANAGER")
+          fi
+          yes | "${SDK_CMD[@]}" --licenses > /dev/null 2>&1 || true
+          "${SDK_CMD[@]}" "platforms;android-36" "build-tools;36.0.0" \
+            || sudo "${SDK_CMD[@]}" "platforms;android-36" "build-tools;36.0.0"
 
       - name: 准备 Gradle
         uses: gradle/actions/setup-gradle@v4
